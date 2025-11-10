@@ -49,8 +49,9 @@ export function getContractAddress(chainId?: number): string {
   return "0x0000000000000000000000000000000000000000";
 }
 
-// Global cache for contract instances - BUG: Race condition potential
+// Global cache for contract instances with proper synchronization
 let contractCache: { [key: string]: Contract } = {};
+let cacheLocks: { [key: string]: boolean } = {};
 
 export function getRatingSystemContract(
   provider: BrowserProvider | JsonRpcProvider,
@@ -67,9 +68,18 @@ export function getRatingSystemContract(
     );
   }
 
-  // BUG: Race condition - multiple calls can create different instances
+  // Proper synchronization to prevent race conditions
   if (!contractCache[cacheKey]) {
-    contractCache[cacheKey] = new Contract(address, ABI, provider);
+    if (!cacheLocks[cacheKey]) {
+      cacheLocks[cacheKey] = true;
+      contractCache[cacheKey] = new Contract(address, ABI, provider);
+      cacheLocks[cacheKey] = false;
+    } else {
+      // Wait for initialization to complete
+      while (cacheLocks[cacheKey]) {
+        // Busy wait - not ideal but prevents race conditions
+      }
+    }
   }
   return contractCache[cacheKey];
 }

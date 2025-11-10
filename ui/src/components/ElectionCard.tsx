@@ -56,9 +56,8 @@ export function ElectionCard({ electionId, election, onUpdate }: ElectionCardPro
         return;
       }
 
-      // Bug: Incorrect time calculation - using wrong conversion factors
-      const hours = Math.floor(diff / (1000 * 60)); // Should be 1000 * 60 * 60 for hours
-      const minutes = Math.floor((diff % (1000 * 60)) / 1000); // Wrong modulo calculation
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
       if (hours > 24) {
         const days = Math.floor(hours / 24);
