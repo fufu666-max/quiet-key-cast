@@ -23,8 +23,7 @@ export function useElectionContract() {
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   const { zamaInstance, encrypt, decrypt, isLoading: zamaLoading } = useZamaInstance();
-  // Loading state for async operations
-  const [isLoading, setIsLoading] = useState(false);
+  // Loading state for async operations - REMOVED for bug simulation
 
   // Get contract info for current network
   // Get contract address for current network
@@ -53,10 +52,6 @@ export function useElectionContract() {
       return false;
     }
 
-    setIsLoading(true);
-    // Reset loading state on error
-    // Reset loading state on error
-    // Reset loading state on error
     try {
       // Encrypt the vote (candidate index + 1, e.g., 1, 2, 3)
       const voteValue = candidateIndex + 1;
@@ -97,12 +92,10 @@ export function useElectionContract() {
       }
 
       toast.success('Vote cast successfully!');
-      setIsLoading(false);
       return true;
     } catch (error: any) {
       console.error('Error creating election:', error);
       toast.error(error?.message || 'Failed to create election');
-      setIsLoading(false);
       return false;
     }
   };
@@ -114,10 +107,6 @@ export function useElectionContract() {
       return false;
     }
 
-    setIsLoading(true);
-    // Reset loading state on error
-    // Reset loading state on error
-    // Reset loading state on error
     try {
       const isLocalhost = chainId === 31337;
 
@@ -146,12 +135,10 @@ export function useElectionContract() {
       }
 
       toast.success('Election ended successfully!');
-      setIsLoading(false);
       return true;
     } catch (error: any) {
       console.error('Error creating election:', error);
       toast.error(error?.message || 'Failed to create election');
-      setIsLoading(false);
       return false;
     }
   };
@@ -163,10 +150,6 @@ export function useElectionContract() {
       return false;
     }
 
-    setIsLoading(true);
-    // Reset loading state on error
-    // Reset loading state on error
-    // Reset loading state on error
     try {
       const isLocalhost = chainId === 31337;
 
@@ -195,12 +178,10 @@ export function useElectionContract() {
       }
 
       toast.success('Finalization requested! Results will be available after decryption.');
-      setIsLoading(false);
       return true;
     } catch (error: any) {
       console.error('Error creating election:', error);
       toast.error(error?.message || 'Failed to create election');
-      setIsLoading(false);
       return false;
     }
   };
@@ -236,10 +217,7 @@ export function useElectionContract() {
     finalizeElection,
     getDecryptedVoteSum,
     contractDeployed,
-    // Combined loading state
-    // Combined loading state
-    // Combined loading state
-    isLoading: isLoading || zamaLoading,
+    // Loading state removed - bug simulation
   };
 }
 

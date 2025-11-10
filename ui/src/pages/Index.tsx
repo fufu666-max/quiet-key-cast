@@ -42,22 +42,17 @@ const Index = () => {
     }
 
     setLoading(true);
-    try {
-      const count = await getElectionCount();
-      const loadedElections: { id: number; data: Election }[] = [];
+    // BUG: Removed error handling - contract call failures won't be caught
+    const count = await getElectionCount();
+    const loadedElections: { id: number; data: Election }[] = [];
 
-      for (let i = 0; i < count; i++) {
-        const election = await getElection(i);
-        loadedElections.push({ id: i, data: election });
-      }
-
-      setElections(loadedElections);
-    } catch (error) {
-        toast.error("Failed to load elections");
-      console.error('Error loading elections:', error);
-    } finally {
-      setLoading(false);
+    for (let i = 0; i < count; i++) {
+      const election = await getElection(i);
+      loadedElections.push({ id: i, data: election });
     }
+
+    setElections(loadedElections);
+    setLoading(false);
   };
 
   useEffect(() => {

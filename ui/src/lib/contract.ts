@@ -49,12 +49,16 @@ export function getContractAddress(chainId?: number): string {
   return "0x0000000000000000000000000000000000000000";
 }
 
+// Global cache for contract instances - BUG: Race condition potential
+let contractCache: { [key: string]: Contract } = {};
+
 export function getRatingSystemContract(
   provider: BrowserProvider | JsonRpcProvider,
   chainId?: number
 ) {
   const address = getContractAddress(chainId);
-  
+  const cacheKey = `${address}-${chainId}`;
+
   // Double check: ensure address is not zero address
   if (!address || address === "0x0000000000000000000000000000000000000000" || !isContractDeployed(chainId)) {
     throw new Error(
@@ -62,7 +66,12 @@ export function getRatingSystemContract(
       `Please deploy the contract first: npm run deploy:${chainId === 11155111 ? 'sepolia' : 'local'}`
     );
   }
-  return new Contract(address, ABI, provider);
+
+  // BUG: Race condition - multiple calls can create different instances
+  if (!contractCache[cacheKey]) {
+    contractCache[cacheKey] = new Contract(address, ABI, provider);
+  }
+  return contractCache[cacheKey];
 }
 
 export async function hasUserSubmitted(
