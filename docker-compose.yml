@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  fhevm-node:
+    image: zama/fhevm:latest
+    ports:
+      - "8545:8545"
+    environment:
+      - RUST_LOG=info
+    volumes:
+      - fhevm-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: fhevm
+      POSTGRES_USER: fhevm
+      POSTGRES_PASSWORD: fhevm
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  fhevm-data:
+  postgres-data:
