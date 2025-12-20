@@ -26,13 +26,16 @@ import type {
 export interface AnonymousElectionInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "candidateVoteCounts"
       | "createElection"
       | "decryptionCallback"
       | "elections"
       | "endElection"
       | "finalizeElection"
+      | "getCandidateVoteCount"
       | "getDecryptedVoteSum"
       | "getElection"
+      | "getElectionAdmin"
       | "getElectionCount"
       | "getEncryptedVoteSum"
       | "hasUserVoted"
@@ -50,6 +53,10 @@ export interface AnonymousElectionInterface extends Interface {
       | "VoteCasted"
   ): EventFragment;
 
+  encodeFunctionData(
+    functionFragment: "candidateVoteCounts",
+    values: [BigNumberish, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "createElection",
     values: [string, string, string[], BigNumberish]
@@ -71,11 +78,19 @@ export interface AnonymousElectionInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getCandidateVoteCount",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getDecryptedVoteSum",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getElection",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getElectionAdmin",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -104,6 +119,10 @@ export interface AnonymousElectionInterface extends Interface {
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "candidateVoteCounts",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "createElection",
     data: BytesLike
   ): Result;
@@ -121,11 +140,19 @@ export interface AnonymousElectionInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getCandidateVoteCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getDecryptedVoteSum",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "getElection",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getElectionAdmin",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -149,13 +176,20 @@ export namespace ElectionCreatedEvent {
   export type InputTuple = [
     electionId: BigNumberish,
     title: string,
-    admin: AddressLike
+    admin: AddressLike,
+    candidateCount: BigNumberish
   ];
-  export type OutputTuple = [electionId: bigint, title: string, admin: string];
+  export type OutputTuple = [
+    electionId: bigint,
+    title: string,
+    admin: string,
+    candidateCount: bigint
+  ];
   export interface OutputObject {
     electionId: bigint;
     title: string;
     admin: string;
+    candidateCount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -164,10 +198,20 @@ export namespace ElectionCreatedEvent {
 }
 
 export namespace ElectionEndedEvent {
-  export type InputTuple = [electionId: BigNumberish];
-  export type OutputTuple = [electionId: bigint];
+  export type InputTuple = [
+    electionId: BigNumberish,
+    timestamp: BigNumberish,
+    endedBy: AddressLike
+  ];
+  export type OutputTuple = [
+    electionId: bigint,
+    timestamp: bigint,
+    endedBy: string
+  ];
   export interface OutputObject {
     electionId: bigint;
+    timestamp: bigint;
+    endedBy: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -178,12 +222,21 @@ export namespace ElectionEndedEvent {
 export namespace ElectionFinalizedEvent {
   export type InputTuple = [
     electionId: BigNumberish,
-    decryptedSum: BigNumberish
+    decryptedSum: BigNumberish,
+    totalVoters: BigNumberish,
+    finalizedBy: AddressLike
   ];
-  export type OutputTuple = [electionId: bigint, decryptedSum: bigint];
+  export type OutputTuple = [
+    electionId: bigint,
+    decryptedSum: bigint,
+    totalVoters: bigint,
+    finalizedBy: string
+  ];
   export interface OutputObject {
     electionId: bigint;
     decryptedSum: bigint;
+    totalVoters: bigint;
+    finalizedBy: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -192,11 +245,20 @@ export namespace ElectionFinalizedEvent {
 }
 
 export namespace FinalizeRequestedEvent {
-  export type InputTuple = [electionId: BigNumberish, requestId: BigNumberish];
-  export type OutputTuple = [electionId: bigint, requestId: bigint];
+  export type InputTuple = [
+    electionId: BigNumberish,
+    requestId: BigNumberish,
+    requestedBy: AddressLike
+  ];
+  export type OutputTuple = [
+    electionId: bigint,
+    requestId: bigint,
+    requestedBy: string
+  ];
   export interface OutputObject {
     electionId: bigint;
     requestId: bigint;
+    requestedBy: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -205,11 +267,20 @@ export namespace FinalizeRequestedEvent {
 }
 
 export namespace VoteCastedEvent {
-  export type InputTuple = [electionId: BigNumberish, voter: AddressLike];
-  export type OutputTuple = [electionId: bigint, voter: string];
+  export type InputTuple = [
+    electionId: BigNumberish,
+    voter: AddressLike,
+    totalVoters: BigNumberish
+  ];
+  export type OutputTuple = [
+    electionId: bigint,
+    voter: string,
+    totalVoters: bigint
+  ];
   export interface OutputObject {
     electionId: bigint;
     voter: string;
+    totalVoters: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -259,6 +330,12 @@ export interface AnonymousElection extends BaseContract {
   removeAllListeners<TCEvent extends TypedContractEvent>(
     event?: TCEvent
   ): Promise<this>;
+
+  candidateVoteCounts: TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [string],
+    "view"
+  >;
 
   createElection: TypedContractMethod<
     [
@@ -319,6 +396,12 @@ export interface AnonymousElection extends BaseContract {
     "nonpayable"
   >;
 
+  getCandidateVoteCount: TypedContractMethod<
+    [_electionId: BigNumberish, _candidateId: BigNumberish],
+    [string],
+    "view"
+  >;
+
   getDecryptedVoteSum: TypedContractMethod<
     [_electionId: BigNumberish],
     [bigint],
@@ -350,6 +433,12 @@ export interface AnonymousElection extends BaseContract {
         totalVoters: bigint;
       }
     ],
+    "view"
+  >;
+
+  getElectionAdmin: TypedContractMethod<
+    [_electionId: BigNumberish],
+    [string],
     "view"
   >;
 
@@ -389,6 +478,13 @@ export interface AnonymousElection extends BaseContract {
     key: string | FunctionFragment
   ): T;
 
+  getFunction(
+    nameOrSignature: "candidateVoteCounts"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [string],
+    "view"
+  >;
   getFunction(
     nameOrSignature: "createElection"
   ): TypedContractMethod<
@@ -446,6 +542,13 @@ export interface AnonymousElection extends BaseContract {
     nameOrSignature: "finalizeElection"
   ): TypedContractMethod<[_electionId: BigNumberish], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "getCandidateVoteCount"
+  ): TypedContractMethod<
+    [_electionId: BigNumberish, _candidateId: BigNumberish],
+    [string],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "getDecryptedVoteSum"
   ): TypedContractMethod<[_electionId: BigNumberish], [bigint], "view">;
   getFunction(
@@ -477,6 +580,9 @@ export interface AnonymousElection extends BaseContract {
     ],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "getElectionAdmin"
+  ): TypedContractMethod<[_electionId: BigNumberish], [string], "view">;
   getFunction(
     nameOrSignature: "getElectionCount"
   ): TypedContractMethod<[], [bigint], "view">;
@@ -549,7 +655,7 @@ export interface AnonymousElection extends BaseContract {
   >;
 
   filters: {
-    "ElectionCreated(uint256,string,address)": TypedContractEvent<
+    "ElectionCreated(uint256,string,address,uint256)": TypedContractEvent<
       ElectionCreatedEvent.InputTuple,
       ElectionCreatedEvent.OutputTuple,
       ElectionCreatedEvent.OutputObject
@@ -560,7 +666,7 @@ export interface AnonymousElection extends BaseContract {
       ElectionCreatedEvent.OutputObject
     >;
 
-    "ElectionEnded(uint256)": TypedContractEvent<
+    "ElectionEnded(uint256,uint256,address)": TypedContractEvent<
       ElectionEndedEvent.InputTuple,
       ElectionEndedEvent.OutputTuple,
       ElectionEndedEvent.OutputObject
@@ -571,7 +677,7 @@ export interface AnonymousElection extends BaseContract {
       ElectionEndedEvent.OutputObject
     >;
 
-    "ElectionFinalized(uint256,uint256)": TypedContractEvent<
+    "ElectionFinalized(uint256,uint256,uint256,address)": TypedContractEvent<
       ElectionFinalizedEvent.InputTuple,
       ElectionFinalizedEvent.OutputTuple,
       ElectionFinalizedEvent.OutputObject
@@ -582,7 +688,7 @@ export interface AnonymousElection extends BaseContract {
       ElectionFinalizedEvent.OutputObject
     >;
 
-    "FinalizeRequested(uint256,uint256)": TypedContractEvent<
+    "FinalizeRequested(uint256,uint256,address)": TypedContractEvent<
       FinalizeRequestedEvent.InputTuple,
       FinalizeRequestedEvent.OutputTuple,
       FinalizeRequestedEvent.OutputObject
@@ -593,7 +699,7 @@ export interface AnonymousElection extends BaseContract {
       FinalizeRequestedEvent.OutputObject
     >;
 
-    "VoteCasted(uint256,address)": TypedContractEvent<
+    "VoteCasted(uint256,address,uint256)": TypedContractEvent<
       VoteCastedEvent.InputTuple,
       VoteCastedEvent.OutputTuple,
       VoteCastedEvent.OutputObject

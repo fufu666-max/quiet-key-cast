@@ -22,12 +22,9 @@ export type { IFHEVMExecutor } from "./@fhevm/solidity/lib/Impl.sol/IFHEVMExecut
 export { IFHEVMExecutor__factory } from "./factories/@fhevm/solidity/lib/Impl.sol/IFHEVMExecutor__factory";
 export type { IInputVerifier } from "./@fhevm/solidity/lib/Impl.sol/IInputVerifier";
 export { IInputVerifier__factory } from "./factories/@fhevm/solidity/lib/Impl.sol/IInputVerifier__factory";
-<<<<<<< HEAD
 export type { AnonymousElection } from "./contracts/AnonymousElection";
 export { AnonymousElection__factory } from "./factories/contracts/AnonymousElection__factory";
-=======
-export type { EncryptedRatingSystem } from "./contracts/EncryptedRatingSystem";
-export { EncryptedRatingSystem__factory } from "./factories/contracts/EncryptedRatingSystem__factory";
->>>>>>> 1f89f3d9863028fc4f7ed99c3c0a22b9ce9bb463
 export type { FHECounter } from "./contracts/FHECounter";
 export { FHECounter__factory } from "./factories/contracts/FHECounter__factory";
+export type { FHEKeyManager } from "./contracts/FHEKeyManager";
+export { FHEKeyManager__factory } from "./factories/contracts/FHEKeyManager__factory";

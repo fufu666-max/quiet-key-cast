@@ -20,7 +20,6 @@ async function deployFixture() {
   return { electionContract, electionContractAddress };
 }
 
-// Test suite for AnonymousElection contract
 describe("AnonymousElection", function () {
   let signers: Signers;
   let electionContract: AnonymousElection;
@@ -37,7 +36,6 @@ describe("AnonymousElection", function () {
     };
   });
 
-  // Setup fresh contract instance for each test
   beforeEach(async function () {
     // Check whether the tests are running against an FHEVM mock environment
     if (!fhevm.isMock) {
@@ -48,7 +46,6 @@ describe("AnonymousElection", function () {
     ({ electionContract, electionContractAddress } = await deployFixture());
   });
 
-  // Test suite for election creation functionality
   describe("Election Creation", function () {
     it("should create a new election", async function () {
       const candidates = ["Alice Smith", "Bob Johnson", "Carol White"];
@@ -127,23 +124,6 @@ describe("AnonymousElection", function () {
     });
 
     it("should accumulate encrypted votes correctly", async function () {
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
-      expect(true).to.be.true;
       // Alice votes for candidate 1
       const aliceVote = 1;
       const encryptedAliceVote = await fhevm
@@ -355,11 +335,34 @@ describe("AnonymousElection", function () {
       expect(await electionContract.getElectionCount()).to.equal(2);
     });
 
-    it("should reject elections with zero candidates", async function () {
-      const emptyCandidates: string[] = [];
+    it("Should reject election creation with 0 candidates", async function () {
       await expect(
-        electionContract.connect(signers.admin).createElection("Empty Election", "No candidates", emptyCandidates, 24)
-      ).to.be.revertedWith("At least one candidate required");
+        electionContract.createElection(
+          "Test Election",
+          "Test Description",
+          [],
+          24
+        )
+      ).to.be.revertedWith("Must have at least 2 candidates");
+    });
+
+    it("Should reject election creation with more than 10 candidates", async function () {
+      const tooManyCandidates = Array(11).fill("Candidate");
+      await expect(
+        electionContract.createElection(
+          "Test Election",
+          "Test Description",
+          tooManyCandidates,
+          24
+        )
+      ).to.be.revertedWith("Cannot have more than 10 candidates");
+    });
+
+    it("Should handle vote with invalid candidate index", async function () {
+      const { electionContract, encryptedInput } = await loadFixture(deployElectionFixture);
+      await expect(
+        electionContract.vote(0, encryptedInput.handles[0], encryptedInput.inputProof)
+      ).to.not.be.reverted;
     });
   });
 });

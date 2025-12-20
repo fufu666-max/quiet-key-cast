@@ -46,19 +46,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IInputVerifier__factory>;
     getContractFactory(
-<<<<<<< HEAD
       name: "AnonymousElection",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AnonymousElection__factory>;
-=======
-      name: "EncryptedRatingSystem",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.EncryptedRatingSystem__factory>;
->>>>>>> 1f89f3d9863028fc4f7ed99c3c0a22b9ce9bb463
     getContractFactory(
       name: "FHECounter",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.FHECounter__factory>;
+    getContractFactory(
+      name: "FHEKeyManager",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FHEKeyManager__factory>;
 
     getContractAt(
       name: "EthereumConfig",
@@ -101,22 +99,20 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IInputVerifier>;
     getContractAt(
-<<<<<<< HEAD
       name: "AnonymousElection",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.AnonymousElection>;
-=======
-      name: "EncryptedRatingSystem",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.EncryptedRatingSystem>;
->>>>>>> 1f89f3d9863028fc4f7ed99c3c0a22b9ce9bb463
     getContractAt(
       name: "FHECounter",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.FHECounter>;
+    getContractAt(
+      name: "FHEKeyManager",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FHEKeyManager>;
 
     deployContract(
       name: "EthereumConfig",
@@ -151,19 +147,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IInputVerifier>;
     deployContract(
-<<<<<<< HEAD
       name: "AnonymousElection",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AnonymousElection>;
-=======
-      name: "EncryptedRatingSystem",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.EncryptedRatingSystem>;
->>>>>>> 1f89f3d9863028fc4f7ed99c3c0a22b9ce9bb463
     deployContract(
       name: "FHECounter",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.FHECounter>;
+    deployContract(
+      name: "FHEKeyManager",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FHEKeyManager>;
 
     deployContract(
       name: "EthereumConfig",
@@ -206,22 +200,20 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IInputVerifier>;
     deployContract(
-<<<<<<< HEAD
       name: "AnonymousElection",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AnonymousElection>;
-=======
-      name: "EncryptedRatingSystem",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.EncryptedRatingSystem>;
->>>>>>> 1f89f3d9863028fc4f7ed99c3c0a22b9ce9bb463
     deployContract(
       name: "FHECounter",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.FHECounter>;
+    deployContract(
+      name: "FHEKeyManager",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FHEKeyManager>;
 
     // default types
     getContractFactory(
